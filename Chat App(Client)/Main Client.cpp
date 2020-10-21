@@ -15,16 +15,16 @@ int main(int argc, char* argv[])
         std::cout << "SDLNet could not initialize" << std::endl;
     }
 
-	std::cout << "WELCOME TO HELL!"<<std::endl;
-    
+    std::cout << "WELCOME TO HELL!" << std::endl;
+
     IPaddress ip;
 
     if (SDLNet_ResolveHost(&ip, "www.youtube.com", 80) == -1)
-        {
-            std::cout << "Error establishing connection to the website." << std::endl;
-            system("pause");
-            return 0;
-        }
+    {
+        std::cout << "Error establishing connection to the website." << std::endl;
+        system("pause");
+        return 0;
+    }
 
     TCPsocket socket = SDLNet_TCP_Open(&ip);
 
@@ -45,7 +45,7 @@ int main(int argc, char* argv[])
 
         //send message via open socket that we opened up above
         //if return value is less than length of message thn error occured
-        if (SDLNet_TCP_Send(socket, message.c_str(), messageLength)< messageLength)
+        if (SDLNet_TCP_Send(socket, message.c_str(), messageLength) < messageLength)
         {
             std::cout << "Error sending the request to website" << std::endl;
         }
@@ -70,6 +70,6 @@ int main(int argc, char* argv[])
     SDLNet_Quit;
     SDL_Quit;
 
-	system("pause");
-	return 0;
+    system("pause");
+    return 0;
 }
