@@ -4,8 +4,9 @@
 #include<SDL_net.h>
 
 const int port = 1234;
+const int BUFFER_SIZE = 2000;
 
-std::string message;
+std::string sendMessage;
 //Struct to store the host address (IP) and port number.
 IPaddress ip;
 
@@ -14,7 +15,7 @@ TCPsocket listenSocket = nullptr;
 
 //socket to transfr data to client
 TCPsocket clientSocket = nullptr;
-
+bool AppisRunning = true;
 
 int main(int argc, char* argv[])
 
@@ -59,7 +60,7 @@ int main(int argc, char* argv[])
     {
        clientSocket = SDLNet_TCP_Accept(listenSocket);
        std::cout << ".";
-           SDL_Delay(1000);
+       SDL_Delay(1000);
     }
 
     SDLNet_TCP_Close(listenSocket);
@@ -70,14 +71,29 @@ int main(int argc, char* argv[])
     std::cout << "WELCOME TO HELL!" << std::endl;
 
         //create a friendly message for the client
-    message = "Ohh you poor soul, You just had to come here.";
-        //we ned length of message in order to send data
-        //we add an extra space for the terminating null '\0'
-        int messageLength = message.length() + 1;
+    
+    //we ned length of message in order to send data
+    //we add an extra space for the terminating null '\0'
 
+    while (AppisRunning)
+    {
+        std::cout << "Say:";
+        std::cin >> sendMessage;
+        char getmessage[BUFFER_SIZE];
+        if (SDLNet_TCP_Recv(clientSocket, getmessage, BUFFER_SIZE) <= 0)
+        {
+            std::cout << "Error receiving the message" << std::endl;
+        }
+        else
+        {
+            std::cout << getmessage << std::endl;
+            system("pause");
+
+        }
+        int messageLength = sendMessage.length() + 1;
         //send message via open socket that we opened up above
         //if return value is less than length of message thn error occured
-        if (SDLNet_TCP_Send(clientSocket, message.c_str(), messageLength) < messageLength)
+        if (SDLNet_TCP_Send(clientSocket, sendMessage.c_str(), messageLength) < messageLength)
         {
             std::cout << "Error sending the message" << std::endl;
         }
@@ -85,7 +101,8 @@ int main(int argc, char* argv[])
         {
             std::cout << "Message sent to client." << std::endl;
         }
-        SDLNet_TCP_Close(clientSocket);
+    }
+    SDLNet_TCP_Close(clientSocket);
     //shut down the SDL/Connection
     SDLNet_Quit;
     SDL_Quit;
