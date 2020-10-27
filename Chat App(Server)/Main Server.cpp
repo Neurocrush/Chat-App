@@ -70,7 +70,7 @@ int main(int argc, char* argv[])
     system("cls");
     std::cout << "WELCOME TO HELL!" << std::endl;
 
-        //create a friendly message for the client
+     //create a friendly message for the client
     
     //we ned length of message in order to send data
     //we add an extra space for the terminating null '\0'
@@ -78,8 +78,17 @@ int main(int argc, char* argv[])
     while (AppisRunning)
     {
         std::cout << "Say:";
-        std::cin >> sendMessage;
-        char getmessage[BUFFER_SIZE];
+        std::getline(std::cin, sendMessage);
+        char getmessage[BUFFER_SIZE] = { '\0' };;
+        int messageLength = sendMessage.length() + 1;
+        //send message via open socket that we opened up above
+        //if return value is less than length of message thn error occured
+        if (SDLNet_TCP_Send(clientSocket, sendMessage.c_str(), messageLength) < messageLength)
+        {
+            std::cout << "Error sending the message" << std::endl;
+        }
+
+
         if (SDLNet_TCP_Recv(clientSocket, getmessage, BUFFER_SIZE) <= 0)
         {
             std::cout << "Error receiving the message" << std::endl;
@@ -89,17 +98,6 @@ int main(int argc, char* argv[])
             std::cout << getmessage << std::endl;
             system("pause");
 
-        }
-        int messageLength = sendMessage.length() + 1;
-        //send message via open socket that we opened up above
-        //if return value is less than length of message thn error occured
-        if (SDLNet_TCP_Send(clientSocket, sendMessage.c_str(), messageLength) < messageLength)
-        {
-            std::cout << "Error sending the message" << std::endl;
-        }
-        else
-        {
-            std::cout << "Message sent to client." << std::endl;
         }
     }
     SDLNet_TCP_Close(clientSocket);

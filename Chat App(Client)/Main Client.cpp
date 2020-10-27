@@ -5,6 +5,7 @@
 
 const int port = 1234;
 const int BUFFER_SIZE = 2000;
+
 bool AppisRunning = true;
 //Struct to store the host address (IP) and port number.
 IPaddress ip;
@@ -61,16 +62,8 @@ int main(int argc, char* argv[])
         
         std::string sendMessage;
         std::cout << "Say:";
-        std::cin >> sendMessage;
-        char getmessage[BUFFER_SIZE];
-        if (SDLNet_TCP_Send(socket, sendMessage.c_str(), sendMessage.length()) < sendMessage.length())
-        {
-            std::cout << "Error sending the message";
-        }
-        //we ned length of message in order to send data
-        //we add an extra space for the terminating null '\0'
-
-        //receive message
+        std::getline(std::cin, sendMessage);
+        char getmessage[BUFFER_SIZE] = {'\0'};
         if (SDLNet_TCP_Recv(socket, getmessage, BUFFER_SIZE) <= 0)
         {
             std::cout << "Error receiving the message" << std::endl;
@@ -81,6 +74,14 @@ int main(int argc, char* argv[])
             system("pause");
 
         }
+        if (SDLNet_TCP_Send(socket, sendMessage.c_str(), sendMessage.length()) < sendMessage.length())
+        {
+            std::cout << "Error sending the message";
+        }
+        //we ned length of message in order to send data
+        //we add an extra space for the terminating null '\0'
+
+        //receive message
     }
     //shut down the SDL/Connection
     SDLNet_TCP_Close(socket);
