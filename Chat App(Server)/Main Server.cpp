@@ -15,6 +15,8 @@ TCPsocket listenSocket = nullptr;
 
 //socket to transfr data to client
 TCPsocket clientSocket = nullptr;
+
+bool messageSent = false;
 bool AppisRunning = true;
 
 int main(int argc, char* argv[])
@@ -77,28 +79,39 @@ int main(int argc, char* argv[])
 
     while (AppisRunning)
     {
-        std::cout << "Say:";
-        std::getline(std::cin, sendMessage);
         char getmessage[BUFFER_SIZE] = { '\0' };;
-        int messageLength = sendMessage.length() + 1;
-        //send message via open socket that we opened up above
-        //if return value is less than length of message thn error occured
-        if (SDLNet_TCP_Send(clientSocket, sendMessage.c_str(), messageLength) < messageLength)
+        if (messageSent)
         {
-            std::cout << "Error sending the message" << std::endl;
-        }
+            //send message via open socket that we opened up above
+            //if return value is less than length of message thn error occured
+            if (SDLNet_TCP_Recv(clientSocket, getmessage, BUFFER_SIZE) <= 0)
+            {
+                std::cout << "Error receiving the message" << std::endl;
+            }
+            else
+            {
+                std::cout << getmessage << std::endl;
+                messageSent = false;
+                system("pause");
 
-
-        if (SDLNet_TCP_Recv(clientSocket, getmessage, BUFFER_SIZE) <= 0)
-        {
-            std::cout << "Error receiving the message" << std::endl;
+            }
         }
         else
         {
-            std::cout << getmessage << std::endl;
-            system("pause");
-
+            std::cout << "Say:";
+            std::getline(std::cin, sendMessage);
+            int messageLength = sendMessage.length() + 1;
+            if (SDLNet_TCP_Send(clientSocket, sendMessage.c_str(), messageLength) < messageLength)
+            {
+                std::cout << "Error sending the message" << std::endl;
+            }
+            else
+            {
+                messageSent = true;
+                sendMessage.clear();
+            }
         }
+
     }
     SDLNet_TCP_Close(clientSocket);
     //shut down the SDL/Connection
