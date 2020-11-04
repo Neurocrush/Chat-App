@@ -147,7 +147,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Client_Connection.cpp" />
     <ClCompile Include="Main Client.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Client_Connection.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

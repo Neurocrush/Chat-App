@@ -1,104 +1,45 @@
-#include<iostream>
-#include<string>
-#include <SDL.h>
-#include<SDL_net.h>
-
-const int port = 1234;
-const int BUFFER_SIZE = 2000;
-
-bool messageSent = true;
+#include"Client_Connection.h"
 bool AppisRunning = true;
-//Struct to store the host address (IP) and port number.
-IPaddress ip;
-
-//socket to listen to incoming connections
-TCPsocket socket = nullptr;
-
-
+bool AmRunning = false;
+Client_Connection Client;
 int main(int argc, char* argv[])
-
-//=============================================
-//initialization
-//=============================================
-
 {
-    if (SDL_Init(SDL_INIT_EVERYTHING) == -1)
-    {
-        std::cout << "SDL could not initialize" << std::endl;
-    }
-    if (SDLNet_Init() == -1)
-    {
-        std::cout << "SDLNet could not initialize" << std::endl;
-    }
-
-    //=============================================
-    //Client Code
-    //=============================================
-
-
-    if (SDLNet_ResolveHost(&ip, "127.0.0.1", 1234) == -1)
-    {
-        std::cout << "Error creating a server." << std::endl;
-        system("pause");
-        return 0;
-    }
-
-    socket = SDLNet_TCP_Open(&ip);
-    if (!socket)
-    {
-        std::cout << "Error opening the socket." << std::endl;
-        system("pause");
-        return 0;
-    }
-
+    Client.Initialize();
+    std::cout << "WELCOME TO HELL!" << std::endl;
+    Client.Open_Socket();
     std::cout << "Client Connected." << std::endl;
-    system("pause");
+    std::string Send;
+    std::string Receive;
 
     system("cls");
-    std::cout << "WELCOME TO HELL!" << std::endl;
+    system("pause");
 
-    //create a friendly message for the client
     while (AppisRunning)
     {
-        char getmessage[BUFFER_SIZE] = { '\0' };
-        std::string sendMessage;
-        if (messageSent)
+        if (AmRunning)
         {
-            if (SDLNet_TCP_Recv(socket, getmessage, BUFFER_SIZE) <= 0)
+            std::cout << "Say: ";
+            std::getline(std::cin, Send);
+            if (Client.Send(Send))
             {
-                std::cout << "Error receiving the message" << std::endl;
-            }
-            else
-            {
-                std::cout << getmessage << std::endl;
-                messageSent = false;
                 system("pause");
-
+                AmRunning = false;
             }
+            Send.clear();
         }
         else
         {
-            std::cout << "Say:";
-            std::getline(std::cin, sendMessage);
-            if (SDLNet_TCP_Send(socket, sendMessage.c_str(), sendMessage.length()) < sendMessage.length())
+            if (Client.Receive(Receive))
             {
-                std::cout << "Error sending the message";
-            }
-            else
-            {
-                sendMessage.clear();
-                messageSent = true;
+                std::cout << "Receive: ";
+                std::cout << Receive << std::endl;;
+                system("pause");
+                AmRunning = true;
             }
         }
-        //we ned length of message in order to send data
-        //we add an extra space for the terminating null '\0'
-
-        //receive message
     }
-    //shut down the SDL/Connection
-    SDLNet_TCP_Close(socket);
-    SDLNet_Quit;
-    SDL_Quit;
+    Client.CloseSocket();
+    Client.ShutDown();
     system("pause");
     return 0;
 }
