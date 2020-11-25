@@ -2,6 +2,8 @@
 
 bool TCP_Connection::Initialize()
 {
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 5);
+
     if (SDL_Init(SDL_INIT_EVERYTHING) == -1)
     {
         std::cout << "SDL could not initialize" << std::endl;

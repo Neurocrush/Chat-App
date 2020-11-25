@@ -5,6 +5,7 @@
 #include<SDL_net.h>
 #include<string>
 #include<iostream>
+#include<Windows.h>
 
 class TCP_Connection
 {
@@ -24,7 +25,6 @@ private:
 	TCPsocket listenSocket = nullptr;
 	TCPsocket clientSocket = nullptr;
 	const int BUFFER_SIZE = 2000;
-
 };
 
 #endif !TCP_CONNECTION_H

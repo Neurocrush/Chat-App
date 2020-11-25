@@ -5,6 +5,8 @@
 #include<SDL_net.h>
 #include<string>
 #include<iostream>
+#include <Windows.h>
+
 class Client_Connection
 {
 public:
