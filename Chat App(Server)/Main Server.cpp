@@ -3,6 +3,8 @@
 
 TCP_Connection Server;
 
+bool exitChat = false;
+
 void Sending(std::string Send);
 void Receiveing(std::string Receive);
 
@@ -21,15 +23,17 @@ int main(int argc, char* argv[])
 
     system("cls");
     system("pause");
+
+    SendMessage = std::thread(Sending, Send);
+    ReceiveMessage = std::thread(Receiveing, Receive);
+    SendMessage.detach();
+    ReceiveMessage.detach();
     
-    while (Send != "end" && Receive != "end")
+    while (!exitChat)
     {
-        SendMessage = std::thread(Sending, Send);
-        ReceiveMessage = std::thread(Receiveing, Receive);
-        SendMessage.join();
-        ReceiveMessage.join();
         
     }
+
     Server.CloseSocket();
     Server.ShutDown();
     system("pause");
@@ -37,21 +41,35 @@ int main(int argc, char* argv[])
 }
 void Sending(std::string Send)
 {
-    std::cout << "Say: ";
-    std::getline(std::cin, Send);
-    if (!Server.Send(Send))
+    while (!exitChat)
     {
-        std::cout << "Error on server sending part." << std::endl;
+        std::cout << "Say: ";
+        std::getline(std::cin, Send);
+        if (!Server.Send(Send))
+        {
+            std::cout << "Error on server sending part." << std::endl;
+        }
+        if (Send == "exit")
+        {
+            exitChat = true;
+        }
+        Send.clear();
     }
-    Send.clear();
 }
 
 void Receiveing(std::string Receive)
 {
-    if (Server.Receive(Receive))
+    while (!exitChat)
     {
-        std::cout << std::endl << "Receive: ";
-        std::cout << Receive << std::endl;;
+        if (Server.Receive(Receive))
+        {
+            std::cout << std::endl << "Receive: ";
+            std::cout << Receive << std::endl;;
+        }
+        if (Receive == "exit")
+        {
+            exitChat = true;
+        }
     }
 }
 

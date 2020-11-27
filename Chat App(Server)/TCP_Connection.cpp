@@ -53,11 +53,12 @@ void TCP_Connection::C_O_Socket()  //close and open socket.
 bool TCP_Connection::Send(const std::string& message)
 {
     int messageLength = message.length() + 1;
-    if (SDLNet_TCP_Send(clientSocket, message.c_str(), messageLength) < messageLength)
-    {
-        std::cout << "Error sending the message" << std::endl;
-        return false;
-    }
+     
+     if (SDLNet_TCP_Send(clientSocket, message.c_str(), messageLength) < messageLength)
+     {
+         std::cout << "Error sending the message" << std::endl;
+         return false;
+     }
     return true;
 }
 
